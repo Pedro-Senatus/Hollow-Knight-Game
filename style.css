@@ -1,0 +1,17 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body{
+   display: flex;
+   justify-content: center;
+   align-items: center; 
+   margin-top: 15vh;
+   background-color: #302F30;
+}
+
+#game_board{
+    border: solid black 2px;
+}
