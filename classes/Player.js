@@ -17,6 +17,7 @@ class Player {
 
     this.spriteSheet = this.getImage('assets/sprites/sprite-sheet-hollow-knight.png');
     this.sx = 158;
+    this.framesCounter  = 10;
 
   };
 
@@ -66,30 +67,35 @@ class Player {
 
     // Logica que faz os sprites mudarem
 
-    if (this.sx === 0) {
-      this.sx = 68;
+    if(this.framesCounter === 0){
+
+      if (this.sx === 0) {
+        this.sx = 68;
+      }
+      else if (this.sx === 68) {
+        this.sx = 154;
+      }
+      else {
+        this.sx = 0;
+      }
+      this.framesCounter = 10;
     }
-    else if (this.sx === 68) {
-      this.sx = 154;
-    }
-    else {
-      this.sx = 0;
-    }
+
+    this.framesCounter--;
+
   }
 
   draw(ctx) {
 
     ctx.drawImage(
-
       this.spriteSheet,
       this.sx, 0,
-      44, 87,
+      44, 85,
       this.position.x,
       this.position.y,
       this.width,
       this.height
     );
-    this.update();
   }
 
 }
