@@ -12,7 +12,7 @@ ctx.imageSmoothingEnabled = false;
 const player = new Player();
 
 const checkCollision = (rect1, rect2) => {
-  if (
+  if ( 
     rect1.position.x < rect2.position.x + rect2.width &&
     rect1.position.x + rect1.width > rect2.position.x &&
     rect1.position.y < rect2.position.y + rect2.height &&
@@ -38,7 +38,7 @@ const spawnInterval = Math.floor(Math.random() * (100 - 80 + 1)) + 80;
 const gameLoop = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (keys.left && player.position.x > 0) {
+  if (keys.left  && player.position.x > 0) {
     player.moveLeft();
   }
   if (keys.right && player.position.x <= canvas.width - player.width) {
@@ -56,11 +56,11 @@ const gameLoop = () => {
 
     let spawnChance = Math.floor(Math.random() * 100);
 
-    if(spawnChance <= 80){
+    if(spawnChance <= 50){
         enemies.push(new Enemy(canvas.width, 540)); 
     }
     else{
-        enemies.push(new Dengue(canvas.width, 480));
+        enemies.push(new Dengue(canvas.width, 500));
     }
     spawnTimer = 0; 
   }
@@ -72,7 +72,6 @@ const gameLoop = () => {
     enemy.draw(ctx);
 
     if (checkCollision(player, enemy)) {
-      console.log("Colisão detectada! Game Over!");
       player.position.x = 0;
       player.position.y = player.ground;
 

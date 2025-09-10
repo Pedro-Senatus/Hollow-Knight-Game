@@ -13,5 +13,5 @@ body{
 }
 
 #game_board{
-    border: solid black 2px;
+    background-image: url(./assets/sprites/cenario_de_fundo.png);
 }

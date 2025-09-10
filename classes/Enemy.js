@@ -21,7 +21,7 @@ class Enemy {
       { sx: 340, sy: 0, sw: 80, sh: 180 }
     ];
   }
-
+  
   getImage(path) {
     const image = new Image();
     image.src = path;
@@ -58,9 +58,6 @@ class Enemy {
       drawWidth -= 20;
     }
 
-    ctx.fillStyle = 'green';
-    ctx.fillRect(this.position.x, this.position.y, drawWidth, this.height);
-
     ctx.drawImage(
       this.spriteSheet,
       frame.sx,
@@ -76,25 +73,52 @@ class Enemy {
     this.update();
   }
 }
-
-// A classe Dengue herda de Enemy e mantém sua própria lógica
 class Dengue extends Enemy {
     constructor(x, y) {
         super(x, y);
         
-        // As propriedades de Dengue devem sobrescrever as de Enemy
-        this.width = 30 * 1.42;
-        this.height = 30 * 1.42;
+        this.width = 65 * 1.42;
+        this.height = 60 * 1.42;
         this.velocity = 6;
+
+        this.spriteSheet = this.getImage('assets/sprites/sprite-sheet-mosquito.png');
+
+        this.frames = [
+        { sx: 0, sy: 0, sw: 65, sh: 85 },
+        { sx: 100, sy: 25, sw: 65, sh: 65},
+        { sx: 200, sy: 25, sw: 85, sh: 65},
+      ];
+
+      this.currentFrameIndex = 0;
+      this.animationTimer = 0;
+      this.animationSpeed = 25;
+
     }
     
-    // A classe Dengue agora precisa de sua própria lógica de desenho
-    draw(ctx) {
-        // A lógica de desenho da Dengue é diferente
-        ctx.fillStyle = 'green';
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
-        this.update();
+   draw(ctx) {
+    this.update();
+
+    this.animationTimer++;
+    if (this.animationTimer >= this.animationSpeed) {
+        this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
+        this.animationTimer = 0;
     }
+
+    const currentFrame = this.frames[this.currentFrameIndex];
+
+    ctx.drawImage(
+        this.spriteSheet,
+        currentFrame.sx,
+        currentFrame.sy,
+        currentFrame.sw,
+        currentFrame.sh,
+        this.position.x,
+        this.position.y,
+        this.width, 
+        this.height
+    );
+}
+    
 }
 
 export {Enemy, Dengue};

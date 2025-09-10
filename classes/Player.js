@@ -65,8 +65,6 @@ class Player {
       this.isJumping = false;
     }
 
-    // Logica que faz os sprites mudarem
-
     if(this.framesCounter === 0){
 
       if (this.sx === 0) {
@@ -97,9 +95,6 @@ class Player {
       this.height
     );
   }
-
 }
-
-
 
 export default Player;
