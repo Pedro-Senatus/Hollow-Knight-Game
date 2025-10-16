@@ -4,12 +4,13 @@ class Player {
 
     this.width = 44 * 1.42;
     this.height = 87 * 1.42;
-    this.velocity = 5;
-    this.jumpStrength = -15;
-    this.velocityJump = 0;
-    this.gravity = 0.8;
+    this.velocity = 2;
+    this.jumpStrength = -15; 
+    this.velocityJump = 10;
+    this.gravity = 0.5; 
     this.isJumping = false;
     this.ground = 480;
+    this.lifePoints = 3;
     this.position = {
       x: 0,
       y: 480,
@@ -17,18 +18,15 @@ class Player {
 
     this.spriteSheet = this.getImage('assets/sprites/sprite-sheet-hollow-knight.png');
     this.sx = 158;
-    this.framesCounter  = 10;
-
+    this.framesCounter = 45; 
   };
 
   getImage(path) {
-
     const image = new Image;
 
     image.src = path;
 
     return image;
-
   };
 
   moveLeft() {
@@ -65,7 +63,7 @@ class Player {
       this.isJumping = false;
     }
 
-    if(this.framesCounter === 0){
+    if (this.framesCounter === 0) {
 
       if (this.sx === 0) {
         this.sx = 68;
@@ -76,7 +74,7 @@ class Player {
       else {
         this.sx = 0;
       }
-      this.framesCounter = 10;
+      this.framesCounter = 20;
     }
 
     this.framesCounter--;
@@ -84,7 +82,6 @@ class Player {
   }
 
   draw(ctx) {
-
     ctx.drawImage(
       this.spriteSheet,
       this.sx, 0,
@@ -94,6 +91,12 @@ class Player {
       this.width,
       this.height
     );
+  }
+
+  death(){
+    this.spriteSheet = this.getImage('assets/sprites/sprite-death.png');
+    this.position.y = this.ground;
+    return true
   }
 }
 

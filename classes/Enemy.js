@@ -2,7 +2,7 @@ class Enemy {
   constructor(x, y) {
     this.width = 100;
     this.height = 140;
-    this.velocity = 5;
+    this.velocity = 3; 
     this.position = {
       x: x,
       y: y,
@@ -10,7 +10,7 @@ class Enemy {
     this.spriteSheet = this.getImage('assets/sprites/sprite-sheet-inseto.png');
 
     this.animationTimer = 0;
-    this.animationSpeed = 25;
+    this.animationSpeed = 40; 
     this.currentFrameIndex = 0;
     this.animationState = 'start';
 
@@ -21,7 +21,7 @@ class Enemy {
       { sx: 340, sy: 0, sw: 80, sh: 180 }
     ];
   }
-  
+
   getImage(path) {
     const image = new Image();
     image.src = path;
@@ -30,7 +30,7 @@ class Enemy {
 
   update() {
     this.position.x -= this.velocity;
-    
+
     this.animationTimer++;
     if (this.animationTimer >= this.animationSpeed) {
       this.animationTimer = 0;
@@ -57,6 +57,7 @@ class Enemy {
     if (this.animationState === 'loop') {
       drawWidth -= 20;
     }
+    ctx.fillStyle = 'blue';
 
     ctx.drawImage(
       this.spriteSheet,
@@ -66,59 +67,54 @@ class Enemy {
       frame.sh,
       this.position.x,
       this.position.y,
-      drawWidth,
+      this.width,
       this.height
     );
-
-    this.update();
   }
 }
 class Dengue extends Enemy {
-    constructor(x, y) {
-        super(x, y);
-        
-        this.width = 65 * 1.42;
-        this.height = 60 * 1.42;
-        this.velocity = 6;
+  constructor(x, y) {
+    super(x, y);
 
-        this.spriteSheet = this.getImage('assets/sprites/sprite-sheet-mosquito.png');
+    this.width = 65 * 1.42;
+    this.height = 60 * 1.42;
+    this.velocity = 3; 
 
-        this.frames = [
-        { sx: 0, sy: 0, sw: 65, sh: 85 },
-        { sx: 100, sy: 25, sw: 65, sh: 65},
-        { sx: 200, sy: 25, sw: 85, sh: 65},
-      ];
+    this.spriteSheet = this.getImage('assets/sprites/sprite-sheet-mosquito.png');
 
-      this.currentFrameIndex = 0;
-      this.animationTimer = 0;
-      this.animationSpeed = 25;
+    this.frames = [
+      { sx: 0, sy: 0, sw: 65, sh: 85 },
+      { sx: 100, sy: 25, sw: 65, sh: 65 },
+      { sx: 200, sy: 25, sw: 85, sh: 65 },
+    ];
 
-    }
-    
-   draw(ctx) {
-    this.update();
+    this.currentFrameIndex = 0;
+    this.animationTimer = 0;
+    this.animationSpeed = 20; 
+  }
 
+  update() {
+    this.position.x -= this.velocity;
     this.animationTimer++;
     if (this.animationTimer >= this.animationSpeed) {
-        this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
-        this.animationTimer = 0;
+      this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
+      this.animationTimer = 0;
     }
-
+  }
+  draw(ctx) {
     const currentFrame = this.frames[this.currentFrameIndex];
-
     ctx.drawImage(
-        this.spriteSheet,
-        currentFrame.sx,
-        currentFrame.sy,
-        currentFrame.sw,
-        currentFrame.sh,
-        this.position.x,
-        this.position.y,
-        this.width, 
-        this.height
+      this.spriteSheet,
+      currentFrame.sx,
+      currentFrame.sy,
+      currentFrame.sw,
+      currentFrame.sh,
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
     );
-}
-    
+  }
 }
 
-export {Enemy, Dengue};
+export { Enemy, Dengue };

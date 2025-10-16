@@ -1,17 +1,73 @@
-*{
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+
+* {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
 }
 
-body{
-   display: flex;
-   justify-content: center;
-   align-items: center; 
-   margin-top: 15vh;
-   background-color: #302F30;
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15vh;
+    background-color: #302F30;
+    
 }
 
-#game_board{
-    background-image: url(./assets/sprites/cenario_de_fundo.png);
+#game_board {
+    background-image: url(./assets/sprites/coliseu.png);
+    border: black solid 3px;
+    border-radius: 3px;
+}
+
+#menu_inicial {
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    top: 47%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    width: 1200px;
+    height: 600px;
+    background-color: rgba(3, 3, 58, 0.527);
+    flex-direction: column;
+    gap: 5px;
+}
+
+#start_button {
+    background-color: rgba(84, 6, 6, 0);
+    border: none;
+    color: white;
+    font-size: 35px;
+    font-family: "Pixelify Sans", sans-serif;
+    text-decoration: none;
+    transition: text-decoration 0.2s, color 0.2s;
+    text-shadow: 3px 3px 0 #000000;
+}
+
+#ranking_button {
+    background-color: rgba(84, 6, 6, 0);
+    border: none;
+    color: white;
+    font-size: 35px;
+    font-family: "Pixelify Sans", sans-serif;
+    text-decoration: none;
+    transition: text-decoration 0.2s, color 0.2s;
+    text-shadow: 3px 3px 0 #000000;
+}
+
+#start_button:hover span,
+#ranking_button:hover span {
+    text-decoration: underline;
+    color: white;
+}
+
+.game_title{
+    font-size: 100px;
+    font-family: "Pixelify Sans", sans-serif;
+    color: white;
+    text-shadow: 3px 3px 0 #000000;
 }
