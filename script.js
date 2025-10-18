@@ -46,7 +46,16 @@ const lifePointsIcon = new Image();
 lifePointsIcon.src = 'assets/sprites/life_points.png';
 
 const lifePointsIconEmpty = new Image();
-lifePointsIconEmpty.src = 'assets/sprites/life_points.png';
+lifePointsIconEmpty.src = 'assets/sprites/life_points_negative.png';
+
+const playerDefeatedSprite1 = new Image();
+playerDefeatedSprite1.src = 'assets/sprites/sprite-death.png';
+
+const playerDefeatedSprite2 = new Image();
+playerDefeatedSprite2.src = 'assets/sprites/sprite-death-1.png';
+
+let deathAnimationFrame = 0;
+const deathAnimationSpeed = 50;
 
 function desenharHUD() {
   
@@ -70,54 +79,73 @@ let gameStatus = 'running';
 
 const gameLoop = () => {
 
-  if (gameStatus === 'gameover') {
- 
-      ctx.clearRect(0, 0, canvas.width, canvas.height); 
-      
-      // Desenha a mensagem de Game Over
-      ctx.font = '72px Arial';
-      ctx.fillStyle = 'red';
-      ctx.textAlign = 'center';
-      ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
-      
-      return; // FINALMENTE PARA O requestAnimationFrame AQUI
-  }
+    if (gameStatus === 'gameover') {
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        
+        deathAnimationFrame++;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  desenharHUD()
-  if (keys.left && player.position.x > 0) {
-    player.moveLeft();
-  }
-  if (keys.right && player.position.x <= canvas.width - player.width) {
-    player.moveRight();
-  }
-  if (keys.space) {
-    player.jump();
-  }
+        const currentFrameIndex = Math.floor(deathAnimationFrame / deathAnimationSpeed) % 2; 
 
-  player.update();
-  
-  if (!isInvincible || invincibilityTimer % 10 < 5) { 
-      player.draw(ctx);
-  }
+        let currentDefeatedSprite;
+        if (currentFrameIndex === 0) {
+            currentDefeatedSprite = playerDefeatedSprite1;
+        } else {
+            currentDefeatedSprite = playerDefeatedSprite2;
+        }
+        
+        ctx.drawImage(
+            currentDefeatedSprite, 
+            player.position.x, 
+            player.position.y, 
+            player.width, 
+            player.height
+        );
+        
+        ctx.font = '36px Arial';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText('...Fim...', canvas.width / 2, canvas.height / 2);
 
-  spawnTimer++;
-
-  if (spawnTimer >= spawnInterval) {
-    let spawnChance = Math.floor(Math.random() * 100);
-
-    if (spawnChance <= 50) {
-      enemies.push(new Enemy(canvas.width, 540));
-    }
-    else {
-      enemies.push(new Dengue(canvas.width, 500));
+        requestAnimationFrame(gameLoop);
+        return;
     }
 
-    spawnTimer = 0;
-    spawnInterval = Math.floor(Math.random() * (200 - 160 + 1)) + 160;
-  }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    desenharHUD()
+    if (keys.left && player.position.x > 0) {
+        player.moveLeft();
+    }
+    if (keys.right && player.position.x <= canvas.width - player.width) {
+        player.moveRight();
+    }
+    if (keys.space) {
+        player.jump();
+    }
 
-  for (let i = 0; i < enemies.length; i++) {
+    player.update();
+    
+    if (!isInvincible || invincibilityTimer % 10 < 5) { 
+        player.draw(ctx);
+    }
+
+    spawnTimer++;
+
+    if (spawnTimer >= spawnInterval) {
+        let spawnChance = Math.floor(Math.random() * 100);
+
+        if (spawnChance <= 50) {
+            enemies.push(new Enemy(canvas.width, 540));
+        }
+        else {
+            enemies.push(new Dengue(canvas.width, 500));
+        }
+
+        spawnTimer = 0;
+        spawnInterval = Math.floor(Math.random() * (200 - 160 + 1)) + 160;
+    }
+
+    for (let i = 0; i < enemies.length; i++) {
         const enemy = enemies[i];
 
         enemy.update();
@@ -134,7 +162,6 @@ const gameLoop = () => {
             invincibilityTimer = invincibilityFrames; 
             
             if (vidaAtual <= 0) {
-                console.log("GAME OVER");
                 gameStatus = 'gameover';
             }
         }
@@ -153,7 +180,7 @@ const gameLoop = () => {
         }
     }
 
-  requestAnimationFrame(gameLoop);
+    requestAnimationFrame(gameLoop);
 }
 
 start_button.addEventListener('click', () => {
