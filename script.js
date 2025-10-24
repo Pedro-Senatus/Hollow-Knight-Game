@@ -75,6 +75,30 @@ function desenharHUD() {
     }
 }
 
+const restartButton = {
+    text: 'RECOMEÇAR',
+};
+
+
+function resetGame() {
+    const restart_button = document.getElementById('restart_button');
+    restart_button.style.display = 'none';
+    
+    vidaAtual = vidaMaxima;
+    isInvincible = false;
+    invincibilityTimer = 0;
+    gameStatus = 'running';
+    deathAnimationFrame = 0;
+
+    enemies.length = 0;
+    spawnTimer = 0;
+    
+    player.position.x = 0;
+    player.position.y = player.ground;
+    player.isJumping = false;
+    player.velocityJump = 0;
+}
+
 let gameStatus = 'running';
 
 const gameLoop = () => {
@@ -102,14 +126,23 @@ const gameLoop = () => {
             player.height
         );
         
-        ctx.font = '36px Arial';
-        ctx.fillStyle = 'white';
+        ctx.font = '90px Pixelify Sans';
+        ctx.fillStyle = 'red';
         ctx.textAlign = 'center';
-        ctx.fillText('...Fim...', canvas.width / 2, canvas.height / 2);
+        ctx.fontWeidth = '400';
+     
+        ctx.fillText('YOU DIED', canvas.width / 2, canvas.height / 2);
 
+        restart_button.style.display = 'block'; 
         requestAnimationFrame(gameLoop);
         return;
     }
+
+    // Adicionando sombras em tudo
+    ctx.shadowColor = '#000000';
+    ctx.shadowOffsetY = 3;
+    ctx.shadowBlur = 0;         
+    ctx.shadowOffsetX = 3;  
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     desenharHUD()
@@ -227,3 +260,6 @@ addEventListener('keyup', (event) => {
     keys.space = false;
   }
 });
+
+const restart_button = document.getElementById('restart_button'); 
+restart_button.addEventListener('click', resetGame);
