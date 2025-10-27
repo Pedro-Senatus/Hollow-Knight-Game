@@ -27,7 +27,8 @@ const checkCollision = (rect1, rect2) => {
 const keys = {
   left: false,
   right: false,
-  space: false
+  space: false,
+  down: false,
 }
 
 const enemies = [];
@@ -145,7 +146,7 @@ const gameLoop = () => {
     ctx.shadowOffsetX = 3;  
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    desenharHUD()
+    desenharHUD();
     if (keys.left && player.position.x > 0) {
         player.moveLeft();
     }
@@ -155,7 +156,12 @@ const gameLoop = () => {
     if (keys.space) {
         player.jump();
     }
-
+    if (keys.down) {
+      player.crouch();
+    } else {
+      player.stopCrouch();
+    }
+      
     player.update();
     
     if (!isInvincible || invincibilityTimer % 10 < 5) { 
@@ -241,6 +247,10 @@ addEventListener('keydown', (event) => {
 
     keys.space = true;
   }
+  if (key === 's'){
+
+    keys.down = true;
+  }
 });
 
 addEventListener('keyup', (event) => {
@@ -258,6 +268,9 @@ addEventListener('keyup', (event) => {
   if (key === ' ') {
 
     keys.space = false;
+  }
+  if (key === 's'){
+    keys.down = false;
   }
 });
 

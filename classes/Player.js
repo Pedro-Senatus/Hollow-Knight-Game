@@ -4,13 +4,21 @@ class Player {
 
     this.width = 44 * 1.42;
     this.height = 87 * 1.42;
+
+    this.originalWidth = 44 * 1.42;
+    this.originalHeight = 87 * 1.42;
+    this.crouchWidth = this.originalWidth * 1.25; 
+    this.crouchHeight = this.originalHeight / 1.42;
+
     this.velocity = 2;
     this.jumpStrength = -15; 
     this.velocityJump = 10;
     this.gravity = 0.5; 
     this.isJumping = false;
+    this.isCrouching = false;
     this.ground = 480;
     this.lifePoints = 3;
+   
     this.position = {
       x: 0,
       y: 480,
@@ -43,15 +51,44 @@ class Player {
 
   jump() {
 
-    if (!this.isJumping) {
-
-      this.isJumping = true;
-      this.velocityJump = this.jumpStrength;
+    if (!this.isJumping && !this.isCrouching) {
+        this.isJumping = true;
+        this.velocityJump = this.jumpStrength;
     }
-
   }
 
+  crouch() {
+    if (!this.isJumping && !this.isCrouching) {
+        this.isCrouching = true;
+        
+        this.height = this.crouchHeight; 
+        const heightDifference = this.originalHeight - this.crouchHeight;
+        this.position.y += heightDifference; 
+        
+
+        this.width = this.crouchWidth; 
+    }
+  }
+
+  stopCrouch() {
+    if (this.isCrouching) {
+        this.isCrouching = false;
+        
+        this.height = this.originalHeight; 
+        const heightDifference = this.originalHeight - this.crouchHeight;
+        this.position.y -= heightDifference; 
+
+        this.width = this.originalWidth;
+    }
+}
+
   update() {
+
+    if (this.isCrouching) {
+        this.velocityJump = 0; 
+        this.sx = 475; 
+        return; 
+    }
 
     this.velocityJump += this.gravity;
     this.position.y += this.velocityJump;
