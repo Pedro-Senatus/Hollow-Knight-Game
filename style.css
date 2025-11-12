@@ -75,25 +75,39 @@ body {
 /* ... código de body e game_container ... */
 
 /* Estilos e Posicionamento do Botão de Recomeçar */
+/* No seu arquivo style.css */
+
+/* --- Estilos de Posicionamento (Mantenha este bloco) --- */
 #restart_button {
-    /* Tira do fluxo e posiciona sobre o canvas */
     position: absolute; 
-    
-    /* Centraliza o botão no meio do contêiner */
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* Ajusta o centro exato do botão */
-    
-    /* ESTA LINHA É A CHAVE: Empurra o botão 100px para baixo do centro, 
-       colocando-o abaixo do texto "YOU DIED" */
+    transform: translate(-50%, -50%); 
     margin-top: 100px; 
+    z-index: 20; 
+    
+    padding: 15px 35px; 
+    border: 3px solid #f0f0f0; 
+    border-radius: 8px; 
+    
+    background-color: rgba(40, 40, 40, 0.9); 
+    color: white; /* Cor do texto */
+    
+    font-family: 'Pixelify Sans'; 
+    font-size: 26px;
+    letter-spacing: 2px;
+    
+    transition: all 0.2s ease;
+}
 
-    /* Estilização (adapte ao seu tema) */
-    padding: 15px 30px;
-    font-size: 24px;
-    background-color: #555555;
-    color: white;
-    border: 2px solid #aaaaaa;
+#restart_button:hover {
+    background-color: #a01010; 
+    border-color: #ffffff;
     cursor: pointer;
-    z-index: 20; /* Garante que ele esteja sobre o canvas */
+    transform: translate(-50%, -50%) scale(1.05); 
+}
+
+#restart_button:active {
+    background-color: #800c0c;
+    transform: translate(-50%, -50%) scale(0.98); 
 }
