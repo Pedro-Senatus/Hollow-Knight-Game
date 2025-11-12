@@ -21,6 +21,10 @@ body {
     border-radius: 3px;
 }
 
+#game_container, #game_board {
+    cursor: url('assets/sprites/sprite-cursor.png') 16 16, auto;
+}
+
 #menu_inicial {
     position: absolute;
     align-items: center;
