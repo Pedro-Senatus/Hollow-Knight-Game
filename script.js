@@ -59,7 +59,7 @@ let deathAnimationFrame = 0;
 const deathAnimationSpeed = 50;
 
 let lastTime = 0; 
-const TARGET_FPS = 120;
+const TARGET_FPS = 60;
 const initialEnemySpeed = 5; 
 let currentEnemySpeed = initialEnemySpeed;
 let speedIncreaseTimer = 0;
