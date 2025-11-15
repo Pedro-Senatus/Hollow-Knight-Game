@@ -13,22 +13,22 @@ ctx.imageSmoothingEnabled = false;
 const player = new Player();
 
 const checkCollision = (rect1, rect2) => {
-  if (
-    rect1.position.x < rect2.position.x + rect2.width &&
-    rect1.position.x + rect1.width > rect2.position.x &&
-    rect1.position.y < rect2.position.y + rect2.height &&
-    rect1.position.y + rect1.height > rect2.position.y
-  ) {
-    return true;
-  }
-  return false;
+    if (
+        rect1.position.x < rect2.position.x + rect2.width &&
+        rect1.position.x + rect1.width > rect2.position.x &&
+        rect1.position.y < rect2.position.y + rect2.height &&
+        rect1.position.y + rect1.height > rect2.position.y
+    ) {
+        return true;
+    }
+    return false;
 };
 
 const keys = {
-  left: false,
-  right: false,
-  space: false,
-  down: false,
+    left: false,
+    right: false,
+    space: false,
+    down: false,
 }
 
 const enemies = [];
@@ -58,228 +58,245 @@ playerDefeatedSprite2.src = 'assets/sprites/sprite-death-1.png';
 let deathAnimationFrame = 0;
 const deathAnimationSpeed = 50;
 
+let lastTime = 0; 
+const TARGET_FPS = 120;
+const initialEnemySpeed = 5; 
+let currentEnemySpeed = initialEnemySpeed;
+let speedIncreaseTimer = 0;
+const speedIncreaseInterval = 600;
+const speedIncreaseFactor = 0.05;
+
 function desenharHUD() {
-
-  const iconSize = 30;
-  const padding = 15;
-
-  for (let i = 0; i < vidaMaxima; i++) {
-
-    const xPos = padding + (i * (iconSize + padding / 2));
-    const yPos = padding + iconSize;
-
-    if (i < vidaAtual) {
-      ctx.drawImage(lifePointsIcon, xPos, yPos, iconSize, iconSize)
-    } else {
-      ctx.drawImage(lifePointsIconEmpty, xPos, yPos, iconSize, iconSize)
+    if (vidaAtual <= 0) {
+        return; 
     }
-  }
+    
+    const iconSize = 30; 
+    const padding = 15; 
+
+    for (let i = 0; i < vidaMaxima; i++) {
+        
+        const xPos = padding + (i * (iconSize + padding / 2));
+        const yPos = padding; 
+
+        if (i < vidaAtual) {
+            ctx.drawImage(lifePointsIcon, xPos, yPos, iconSize, iconSize)
+        } else {
+            ctx.drawImage(lifePointsIconEmpty, xPos, yPos, iconSize, iconSize)
+        }
+    }
 }
 
-const restartButton = {
-  text: 'PLAY AGAIN',
-};
-
-
 function resetGame() {
-  const restart_button = document.getElementById('restart_button');
-  restart_button.style.display = 'none';
+    const restart_button = document.getElementById('restart_button');
+    restart_button.style.display = 'none';
 
-  vidaAtual = vidaMaxima;
-  isInvincible = false;
-  invincibilityTimer = 0;
-  gameStatus = 'running';
-  deathAnimationFrame = 0;
+    vidaAtual = vidaMaxima;
+    isInvincible = false;
+    invincibilityTimer = 0;
+    gameStatus = 'running';
+    deathAnimationFrame = 0;
+    currentEnemySpeed = initialEnemySpeed;
 
-  enemies.length = 0;
-  spawnTimer = 0;
-
-  player.position.x = 0;
-  player.position.y = player.ground;
-  player.isJumping = false;
-  player.velocityJump = 0;
+    enemies.length = 0;
+    spawnTimer = 0;
+    
+    player.position.x = 0;
+    player.position.y = player.ground;
+    player.isJumping = false;
+    player.velocityJump = 0;
+    player.width = player.originalWidth;
+    player.height = player.originalHeight;
 }
 
 let gameStatus = 'running';
 
-const gameLoop = () => {
+const gameLoop = (timestamp) => {
 
-  if (gameStatus === 'gameover') {
+    if (lastTime === 0) {
+        lastTime = timestamp;
+        requestAnimationFrame(gameLoop);
+        return; 
+    }
+    
+    const deltaTime = (timestamp - lastTime) / 1000; 
+    lastTime = timestamp;
+    const deltaTimeFactor = deltaTime * TARGET_FPS;
+
+    if (gameStatus === 'gameover') {
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        deathAnimationFrame++; 
+
+        const currentFrameIndex = Math.floor(deathAnimationFrame / deathAnimationSpeed) % 2;
+        let currentDefeatedSprite;
+        if (currentFrameIndex === 0) {
+            currentDefeatedSprite = playerDefeatedSprite1;
+        } else {
+            currentDefeatedSprite = playerDefeatedSprite2;
+        }
+        
+        // Desenho de Game Over
+        ctx.shadowBlur = 0; 
+        ctx.shadowOffsetX = 0;
+        
+        ctx.drawImage(
+            currentDefeatedSprite, 
+            player.position.x, 
+            player.position.y, 
+            player.originalWidth, 
+            player.originalHeight
+        );
+
+        ctx.font = '90px Pixelify Sans';
+        ctx.fillStyle = 'red';
+        ctx.textAlign = 'center';
+        
+        ctx.fillText('YOU DIED', canvas.width / 2, canvas.height / 2);
+
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.shadowColor = 'transparent'; 
+
+        const restart_button = document.getElementById('restart_button');
+        restart_button.style.display = 'block'; 
+        
+        requestAnimationFrame(gameLoop);
+        return;
+    }
+
+    // Lógica de Aumento de Velocidade
+    speedIncreaseTimer += 1 * deltaTimeFactor;
+    if (speedIncreaseTimer >= speedIncreaseInterval) {
+        currentEnemySpeed *= (1 + speedIncreaseFactor);
+        speedIncreaseTimer = 0;
+    }
+
+    // Aplicação da Sombra Global
+    ctx.shadowColor = '#000000';
+    ctx.shadowOffsetY = 3;
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 3;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    deathAnimationFrame++;
-
-    const currentFrameIndex = Math.floor(deathAnimationFrame / deathAnimationSpeed) % 2;
-
-    let currentDefeatedSprite;
-    if (currentFrameIndex === 0) {
-      currentDefeatedSprite = playerDefeatedSprite1;
+    desenharHUD();
+    
+    // 1. INPUTS
+    if (keys.left && player.position.x > 0) {
+        player.moveLeft(deltaTimeFactor);
+    }
+    if (keys.right && player.position.x <= canvas.width - player.width) {
+        player.moveRight(deltaTimeFactor);
+    }
+    if (keys.space) {
+        player.jump();
+    }
+    if (keys.down) {
+        player.crouch();
     } else {
-      currentDefeatedSprite = playerDefeatedSprite2;
+        player.stopCrouch();
     }
 
-    ctx.drawImage(
-      currentDefeatedSprite,
-      player.position.x,
-      player.position.y,
-      player.width,
-      player.height
-    );
+    player.update(deltaTimeFactor);
+    
+    if (!isInvincible || invincibilityTimer % 10 < 5) { 
+        player.draw(ctx);
+    }
 
-    ctx.font = '90px Pixelify Sans';
-    ctx.fillStyle = 'red';
-    ctx.textAlign = 'center';
-    ctx.fontWeidth = '400';
+    // 2. LÓGICA DE SPAWN
+    spawnTimer += 1 * deltaTimeFactor;
 
-    ctx.fillText('YOU DIED', canvas.width / 2, canvas.height / 2);
+    if (spawnTimer >= spawnInterval) {
+        let spawnChance = Math.floor(Math.random() * 100);
 
-    restart_button.style.display = 'block';
+        if (spawnChance <= 50) {
+            enemies.push(new Enemy(canvas.width, 540, currentEnemySpeed)); 
+        }
+        else {
+            const chanceDeSerAlto = 0.5; 
+            const highMosquito = Math.random() < chanceDeSerAlto;
+            let dengueY = 500; 
+
+            if (highMosquito) {
+                dengueY = 440; 
+            }
+            enemies.push(new Dengue(canvas.width, dengueY, currentEnemySpeed)); 
+        }
+
+        spawnTimer = 0;
+        spawnInterval = Math.floor(Math.random() * (200 - 160 + 1)) + 160;
+    }
+
+    // 3. LÓGICA DE INIMIGOS E INVENCIBILIDADE
+    for (let i = 0; i < enemies.length; i++) {
+        const enemy = enemies[i];
+
+        enemy.update(deltaTimeFactor); 
+        enemy.draw(ctx);
+
+        if (checkCollision(player, enemy) && !isInvincible) { 
+
+            vidaAtual -= 1
+
+            enemies.splice(i, 1);
+            i--;
+
+            isInvincible = true;
+            invincibilityTimer = invincibilityFrames; 
+
+            if (vidaAtual <= 0) {
+                gameStatus = 'gameover';
+            }
+        }
+
+        if (enemy.position.x + enemy.width < 0) {
+            enemies.splice(i, 1);
+            i--;
+        }
+    }
+
+    if (isInvincible) {
+        invincibilityTimer -= 1 * deltaTimeFactor; 
+
+        if (invincibilityTimer <= 0) {
+            isInvincible = false;
+        }
+    }
+
     requestAnimationFrame(gameLoop);
-    return;
-  }
-
-  // Adicionando sombras em tudo
-  ctx.shadowColor = '#000000';
-  ctx.shadowOffsetY = 3;
-  ctx.shadowBlur = 0;
-  ctx.shadowOffsetX = 3;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  desenharHUD();
-  if (keys.left && player.position.x > 0) {
-    player.moveLeft();
-  }
-  if (keys.right && player.position.x <= canvas.width - player.width) {
-    player.moveRight();
-  }
-  if (keys.space) {
-    player.jump();
-  }
-  if (keys.down) {
-    player.crouch();
-  } else {
-    player.stopCrouch();
-  }
-
-  player.update();
-
-  if (!isInvincible || invincibilityTimer % 10 < 5) {
-    player.draw(ctx);
-  }
-
-  spawnTimer++;
-
-  if (spawnTimer >= spawnInterval) {
-    let spawnChance = Math.floor(Math.random() * 100);
-
-    if (spawnChance <= 50) {
-      enemies.push(new Enemy(canvas.width, 540));
-    }
-    else {
-      const chanceDeSerAlto = 0.5; 
-      const highMosquito = Math.random() < chanceDeSerAlto;
-
-      let dengueY = 500; 
-
-      if (highMosquito) {
-        dengueY = 440; 
-      }
-
-      enemies.push(new Dengue(canvas.width, dengueY));
-    }
-
-    spawnTimer = 0;
-    spawnInterval = Math.floor(Math.random() * (200 - 160 + 1)) + 160;
-  }
-
-  for (let i = 0; i < enemies.length; i++) {
-    const enemy = enemies[i];
-
-    enemy.update();
-    enemy.draw(ctx);
-
-    if (checkCollision(player, enemy) && !isInvincible) {
-
-      vidaAtual -= 1
-
-      enemies.splice(i, 1);
-      i--;
-
-      isInvincible = true;
-      invincibilityTimer = invincibilityFrames;
-
-      if (vidaAtual <= 0) {
-        gameStatus = 'gameover';
-      }
-    }
-
-    if (enemy.position.x + enemy.width < 0) {
-      enemies.splice(i, 1);
-      i--;
-    }
-  }
-
-  if (isInvincible) {
-    invincibilityTimer--;
-
-    if (invincibilityTimer <= 0) {
-      isInvincible = false;
-    }
-  }
-
-  requestAnimationFrame(gameLoop);
 }
 
+// CORREÇÃO 2: Espera o carregamento da imagem principal antes de iniciar o loop
 start_button.addEventListener('click', () => {
-  const menu_inicial = document.getElementById('menu_inicial');
-  menu_inicial.style.display = 'none';
-  gameLoop();
-})
+    const menu_inicial = document.getElementById('menu_inicial');
+    menu_inicial.style.display = 'none';
+
+    // Garante que o loop comece somente após a imagem do player carregar
+    if (player.spriteSheet.complete) {
+        requestAnimationFrame(gameLoop);
+    } else {
+        player.spriteSheet.onload = () => {
+             requestAnimationFrame(gameLoop);
+        };
+    }
+});
 
 addEventListener('keydown', (event) => {
-
-  const key = event.key.toLowerCase();
-
-  if (key === 'a') {
-
-    keys.left = true;
-  };
-
-  if (key === 'd') {
-
-    keys.right = true;
-  };
-
-  if (key === ' ') {
-
-    keys.space = true;
-  }
-  if (key === 's') {
-
-    keys.down = true;
-  }
+    const key = event.key.toLowerCase();
+    if (key === 'a') keys.left = true;
+    if (key === 'd') keys.right = true;
+    if (key === ' ') keys.space = true;
+    if (key === 's') keys.down = true;
 });
 
 addEventListener('keyup', (event) => {
-
-  const key = event.key.toLowerCase();
-
-  if (key === 'a') {
-
-    keys.left = false;
-  };
-  if (key === 'd') {
-
-    keys.right = false;
-  };
-  if (key === ' ') {
-
-    keys.space = false;
-  }
-  if (key === 's') {
-    keys.down = false;
-  }
+    const key = event.key.toLowerCase();
+    if (key === 'a') keys.left = false;
+    if (key === 'd') keys.right = false;
+    if (key === ' ') keys.space = false;
+    if (key === 's') keys.down = false;
 });
 
 const restart_button = document.getElementById('restart_button');
