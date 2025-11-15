@@ -4,6 +4,7 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    cursor: url('assets/sprites/sprite-cursor.png') 16 16, auto;
 }
 
 body {
@@ -19,10 +20,6 @@ body {
     background-image: url(./assets/sprites/coliseu.png);
     border: black solid 3px;
     border-radius: 3px;
-}
-
-#game_container, #game_board {
-    cursor: url('assets/sprites/sprite-cursor.png') 16 16, auto;
 }
 
 #menu_inicial {
@@ -107,7 +104,6 @@ body {
 #restart_button:hover {
     background-color: #a01010; 
     border-color: #ffffff;
-    cursor: pointer;
     transform: translate(-50%, -50%) scale(1.05); 
 }
 

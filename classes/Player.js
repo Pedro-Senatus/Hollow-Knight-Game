@@ -89,7 +89,7 @@ class Player {
     }
   }
 
-  update() {
+  update(deltaTimeFactor = 1) {
 
     if (this.isCrouching) {
       this.velocityJump = 0;
@@ -97,8 +97,8 @@ class Player {
       return;
     }
 
-    this.velocityJump += this.gravity;
-    this.position.y += this.velocityJump;
+    this.velocityJump += this.gravity * deltaTimeFactor;
+    this.position.y += this.velocityJump * deltaTimeFactor;
 
     if (this.position.y >= this.ground) {
 

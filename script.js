@@ -102,140 +102,68 @@ function resetGame() {
 
 let gameStatus = 'running';
 
-const gameLoop = () => {
+let lastTime = 0; 
+const TARGET_FPS = 60;
 
-  if (gameStatus === 'gameover') {
+const gameLoop = (timestamp) => {
+
+    const deltaTime = (timestamp - lastTime) / 1000; 
+    lastTime = timestamp;
+    const deltaTimeFactor = deltaTime * TARGET_FPS; 
+
+    if (gameStatus === 'gameover') {
+        
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        deathAnimationFrame++; 
+
+        const currentFrameIndex = Math.floor(deathAnimationFrame / deathAnimationSpeed) % 2;
+
+        restart_button.style.display = 'block';
+        requestAnimationFrame(gameLoop);
+        return;
+    }
+
+    ctx.shadowColor = '#000000';
+    ctx.shadowOffsetY = 3;
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 3;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    desenharHUD();
+    
 
-    deathAnimationFrame++;
+    player.update(); Player
+    
+    spawnTimer += 1 * deltaTimeFactor; // O timer original era '++' (somava 1)
 
-    const currentFrameIndex = Math.floor(deathAnimationFrame / deathAnimationSpeed) % 2;
-
-    let currentDefeatedSprite;
-    if (currentFrameIndex === 0) {
-      currentDefeatedSprite = playerDefeatedSprite1;
-    } else {
-      currentDefeatedSprite = playerDefeatedSprite2;
+    if (spawnTimer >= spawnInterval) {
+        spawnTimer = 0;
     }
 
-    ctx.drawImage(
-      currentDefeatedSprite,
-      player.position.x,
-      player.position.y,
-      player.width,
-      player.height
-    );
+    for (let i = 0; i < enemies.length; i++) {
+        const enemy = enemies[i];
 
-    ctx.font = '90px Pixelify Sans';
-    ctx.fillStyle = 'red';
-    ctx.textAlign = 'center';
-    ctx.fontWeidth = '400';
+        enemy.update(deltaTimeFactor); 
+        enemy.draw(ctx);
+    }
 
-    ctx.fillText('YOU DIED', canvas.width / 2, canvas.height / 2);
+    if (isInvincible) {
+        invincibilityTimer -= 1 * deltaTimeFactor; 
+        
+        if (invincibilityTimer <= 0) {
+            isInvincible = false;
+        }
+    }
 
-    restart_button.style.display = 'block';
     requestAnimationFrame(gameLoop);
-    return;
-  }
-
-  // Adicionando sombras em tudo
-  ctx.shadowColor = '#000000';
-  ctx.shadowOffsetY = 3;
-  ctx.shadowBlur = 0;
-  ctx.shadowOffsetX = 3;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  desenharHUD();
-  if (keys.left && player.position.x > 0) {
-    player.moveLeft();
-  }
-  if (keys.right && player.position.x <= canvas.width - player.width) {
-    player.moveRight();
-  }
-  if (keys.space) {
-    player.jump();
-  }
-  if (keys.down) {
-    player.crouch();
-  } else {
-    player.stopCrouch();
-  }
-
-  player.update();
-
-  if (!isInvincible || invincibilityTimer % 10 < 5) {
-    player.draw(ctx);
-  }
-
-  spawnTimer++;
-
-  if (spawnTimer >= spawnInterval) {
-    let spawnChance = Math.floor(Math.random() * 100);
-
-    if (spawnChance <= 50) {
-      enemies.push(new Enemy(canvas.width, 540));
-    }
-    else {
-      const chanceDeSerAlto = 0.5; 
-      const highMosquito = Math.random() < chanceDeSerAlto;
-
-      let dengueY = 500; 
-
-      if (highMosquito) {
-        dengueY = 440; 
-      }
-
-      enemies.push(new Dengue(canvas.width, dengueY));
-    }
-
-    spawnTimer = 0;
-    spawnInterval = Math.floor(Math.random() * (200 - 160 + 1)) + 160;
-  }
-
-  for (let i = 0; i < enemies.length; i++) {
-    const enemy = enemies[i];
-
-    enemy.update();
-    enemy.draw(ctx);
-
-    if (checkCollision(player, enemy) && !isInvincible) {
-
-      vidaAtual -= 1
-
-      enemies.splice(i, 1);
-      i--;
-
-      isInvincible = true;
-      invincibilityTimer = invincibilityFrames;
-
-      if (vidaAtual <= 0) {
-        gameStatus = 'gameover';
-      }
-    }
-
-    if (enemy.position.x + enemy.width < 0) {
-      enemies.splice(i, 1);
-      i--;
-    }
-  }
-
-  if (isInvincible) {
-    invincibilityTimer--;
-
-    if (invincibilityTimer <= 0) {
-      isInvincible = false;
-    }
-  }
-
-  requestAnimationFrame(gameLoop);
 }
 
 start_button.addEventListener('click', () => {
   const menu_inicial = document.getElementById('menu_inicial');
   menu_inicial.style.display = 'none';
   gameLoop();
-
 })
 
 addEventListener('keydown', (event) => {
