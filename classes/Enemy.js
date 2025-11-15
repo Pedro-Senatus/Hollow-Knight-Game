@@ -28,8 +28,8 @@ class Enemy {
     return image;
   }
 
-  update(deltaTimeFactor = 1) {
-    this.position.x -= this.velocity * deltaTimeFactor;
+  update() {
+    this.position.x -= this.velocity;
 
     this.animationTimer++;
     if (this.animationTimer >= this.animationSpeed) {
@@ -93,8 +93,8 @@ class Dengue extends Enemy {
     this.animationSpeed = 20; 
   }
 
-  update(deltaTimeFactor = 1) {
-    this.position.x -= this.velocity * deltaTimeFactor;
+  update() {
+    this.position.x -= this.velocity;
     this.animationTimer++;
     if (this.animationTimer >= this.animationSpeed) {
       this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
