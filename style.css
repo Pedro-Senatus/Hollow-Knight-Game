@@ -18,8 +18,8 @@ body {
 
 #game_board {
     background-image: url(./assets/sprites/coliseu.png);
-    border: black solid 3px;
-    border-radius: 3px;
+    border: black solid 5px;
+    border-radius: 5px;
 }
 
 #menu_inicial {
@@ -81,18 +81,18 @@ body {
 /* --- Estilos de Posicionamento (Mantenha este bloco) --- */
 #restart_button {
     position: absolute; 
-    top: 50%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%, -50%); 
     margin-top: 100px; 
     z-index: 20; 
     
-    padding: 15px 35px; 
-    border: 3px solid #f0f0f0; 
+    padding: 10px 25px; 
+    border: 5px solid #000000; 
     border-radius: 8px; 
     
-    background-color: rgba(40, 40, 40, 0.9); 
-    color: white; /* Cor do texto */
+    background-color: rgba(40, 40, 40, 0.627); 
+    color: white; 
     
     font-family: 'Pixelify Sans'; 
     font-size: 26px;
@@ -102,12 +102,45 @@ body {
 }
 
 #restart_button:hover {
-    background-color: #a01010; 
-    border-color: #ffffff;
+    background-color: rgba(40, 40, 40, 0.9); 
+    border-color: #000000;
     transform: translate(-50%, -50%) scale(1.05); 
 }
 
 #restart_button:active {
-    background-color: #800c0c;
+    background-color: rgba(40, 40, 40, 0.9);
+    transform: translate(-50%, -50%) scale(0.98); 
+}
+
+#back_to_menu_button {
+    position: absolute; 
+    top: 53%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    margin-top: 100px; 
+    z-index: 20; 
+    
+    padding: 10px 25px; 
+    border: 5px solid #000000; 
+    border-radius: 8px; 
+    
+    background-color: rgba(40, 40, 40, 0.627); 
+    color: white; 
+    
+    font-family: 'Pixelify Sans'; 
+    font-size: 26px;
+    letter-spacing: 2px;
+    
+    transition: all 0.2s ease;
+}
+
+#back_to_menu_button:hover {
+    background-color: rgba(40, 40, 40, 0.9); 
+    border-color: #000000;
+    transform: translate(-50%, -50%) scale(1.05); 
+}
+
+#back_to_menu_button:active {
+    background-color: rgba(40, 40, 40, 0.9);
     transform: translate(-50%, -50%) scale(0.98); 
 }

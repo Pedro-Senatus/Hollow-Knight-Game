@@ -148,6 +148,7 @@ class Player {
       drawHeight 
     );
 
+// Verificar hitbox do player
 //     const originalShadowColor = ctx.shadowColor;
 //     const originalShadowBlur = ctx.shadowBlur;
 //     ctx.shadowColor = 'transparent';
