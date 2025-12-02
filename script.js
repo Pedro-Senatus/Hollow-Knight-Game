@@ -39,6 +39,11 @@ let spawnInterval = Math.floor(Math.random() * (200 - 160 + 1)) + 160;
 var vidaAtual = 3;
 const vidaMaxima = 3;
 
+let score = 0; 
+const scoreIncrement = 1; 
+let scoreUpdateTimer = 0;
+const scoreUpdateInterval = 60; 
+
 let isInvincible = false;
 const invincibilityFrames = 60;
 let invincibilityTimer = 0;
@@ -85,16 +90,30 @@ function desenharHUD() {
             ctx.drawImage(lifePointsIconEmpty, xPos, yPos, iconSize, iconSize)
         }
     }
+
+    ctx.font = '30px Pixelify Sans';
+    ctx.textAlign = 'right';
+
+    const scoreText = `SCORE: ${Math.floor(score)}`;
+    const xPos = canvas.width - padding; // Canto superior direito
+    const yPosScore = padding + iconSize; // Abaixo dos ícones de vida ou no topo, se não tiver vida
+    
+    // Desenhar contorno/sombra
+    ctx.strokeStyle = 'black'; 
+    ctx.lineWidth = 5;        
+    ctx.strokeText(scoreText, xPos, yPosScore);
+    
+    // Desenhar texto principal
+    ctx.fillStyle = 'white'; 
+    ctx.fillText(scoreText, xPos, yPosScore);
 }
 
 start_button.addEventListener('click', () => {
     const menu_inicial = document.getElementById('menu_inicial');
     menu_inicial.style.display = 'none';
     
-    // 1. Defina o status de JOGO ATIVO
     gameStatus = 'running'; 
     
-    // 2. Inicia o loop (depois da checagem de imagem)
     if (player.spriteSheet.complete) {
         requestAnimationFrame(gameLoop);
     } else {
@@ -117,6 +136,9 @@ function resetGame() {
     deathAnimationFrame = 0;
     currentEnemySpeed = initialEnemySpeed;
 
+    score = 0;
+    scoreUpdateTimer = 0; 
+
     enemies.length = 0;
     spawnTimer = 0;
 
@@ -130,26 +152,21 @@ function resetGame() {
 
 function backToMenu() {
     
-    // NOVO: Limpa o Canvas imediatamente antes de mostrar o menu
     const canvas = document.getElementById('game_board');
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height); 
     
-    // 1. Limpa variáveis do jogo
     resetGame(); 
 
-    // 2. Oculta os botões de controle do Game Over
     const restart_button = document.getElementById('restart_button');
     const back_to_menu_button = document.getElementById('back_to_menu_button');
 
     restart_button.style.display = 'none';
     back_to_menu_button.style.display = 'none';
     
-    // 3. Mostra o menu inicial
     const menu_inicial = document.getElementById('menu_inicial');
     menu_inicial.style.display = 'flex';
     
-    // 4. Define o estado final para parar o gameLoop
     gameStatus = 'menu'; 
 }
 
@@ -177,8 +194,9 @@ const gameLoop = (timestamp) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         deathAnimationFrame++;
-
+        
         const currentFrameIndex = Math.floor(deathAnimationFrame / deathAnimationSpeed) % 2;
+        
         let currentDefeatedSprite;
         if (currentFrameIndex === 0) {
             currentDefeatedSprite = playerDefeatedSprite1;
@@ -186,7 +204,6 @@ const gameLoop = (timestamp) => {
             currentDefeatedSprite = playerDefeatedSprite2;
         }
 
-        // Desenho de Game Over
         ctx.shadowBlur = 0;
         ctx.shadowOffsetX = 0;
 
@@ -211,6 +228,19 @@ const gameLoop = (timestamp) => {
         ctx.shadowOffsetY = 0;
         ctx.shadowColor = 'transparent';
 
+       ctx.font = '40px Pixelify Sans';
+        ctx.textAlign = 'center';
+        
+        const finalScoreYPosition = canvas.height / 2 + 42; // Ajusta posição do score final
+        const finalScoreText = `Final Score: ${Math.floor(score)}`;
+        
+        ctx.strokeStyle = 'black'; 
+        ctx.lineWidth = 8;         
+        ctx.strokeText(finalScoreText, canvas.width / 2, finalScoreYPosition);
+        
+        ctx.fillStyle = 'white'; 
+        ctx.fillText(finalScoreText, canvas.width / 2, finalScoreYPosition);
+
         const restart_button = document.getElementById('restart_button');
         restart_button.style.display = 'block';
         back_to_menu_button.style.display = 'block';
@@ -218,14 +248,18 @@ const gameLoop = (timestamp) => {
         return;
     }
 
-    // Lógica de Aumento de Velocidade
+    scoreUpdateTimer += 1 * deltaTimeFactor;
+    if (scoreUpdateTimer >= scoreUpdateInterval) {
+        score += scoreIncrement;
+        scoreUpdateTimer = 0;
+    }
+
     speedIncreaseTimer += 1 * deltaTimeFactor;
     if (speedIncreaseTimer >= speedIncreaseInterval) {
         currentEnemySpeed *= (1 + speedIncreaseFactor);
         speedIncreaseTimer = 0;
     }
 
-    // Aplicação da Sombra Global
     ctx.shadowColor = '#000000';
     ctx.shadowOffsetY = 4;
     ctx.shadowBlur = 0;
@@ -234,7 +268,6 @@ const gameLoop = (timestamp) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     desenharHUD();
 
-    // 1. INPUTS
     if (keys.left && player.position.x > 0) {
         player.moveLeft(deltaTimeFactor);
     }
@@ -256,7 +289,6 @@ const gameLoop = (timestamp) => {
         player.draw(ctx);
     }
 
-    // 2. LÓGICA DE SPAWN
     spawnTimer += 1 * deltaTimeFactor;
 
     if (spawnTimer >= spawnInterval) {
@@ -317,19 +349,6 @@ const gameLoop = (timestamp) => {
 
     requestAnimationFrame(gameLoop);
 }
-
-start_button.addEventListener('click', () => {
-    const menu_inicial = document.getElementById('menu_inicial');
-    menu_inicial.style.display = 'none';
-
-    if (player.spriteSheet.complete) {
-        requestAnimationFrame(gameLoop);
-    } else {
-        player.spriteSheet.onload = () => {
-            requestAnimationFrame(gameLoop);
-        };
-    }
-});
 
 addEventListener('keydown', (event) => {
     const key = event.key.toLowerCase();

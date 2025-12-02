@@ -33,7 +33,6 @@ body {
     z-index: 3;
     width: 1200px;
     height: 600px;
-    background-color: rgba(3, 3, 58, 0.527);
     flex-direction: column;
     gap: 5px;
 }
@@ -70,7 +69,7 @@ body {
     font-size: 100px;
     font-family: "Pixelify Sans", sans-serif;
     color: white;
-    text-shadow: 3px 3px 0 #000000;
+    text-shadow: 8px 8px 0 #000000;
 }
 
 /* ... código de body e game_container ... */
@@ -81,10 +80,10 @@ body {
 /* --- Estilos de Posicionamento (Mantenha este bloco) --- */
 #restart_button {
     position: absolute; 
-    top: 45%;
+    top: 58vh;
     left: 50%;
     transform: translate(-50%, -50%); 
-    margin-top: 100px; 
+     
     z-index: 20; 
     
     padding: 10px 25px; 
@@ -114,7 +113,7 @@ body {
 
 #back_to_menu_button {
     position: absolute; 
-    top: 53%;
+    top: 55vh;
     left: 50%;
     transform: translate(-50%, -50%); 
     margin-top: 100px; 
