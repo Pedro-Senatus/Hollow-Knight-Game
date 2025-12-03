@@ -27,7 +27,7 @@ body {
     align-items: center;
     justify-content: center;
     display: flex;
-    top: 47%;
+    top: 48%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 3;
@@ -35,13 +35,14 @@ body {
     height: 600px;
     flex-direction: column;
     gap: 5px;
+    background-color: rgba(0, 255, 255, 0.154);
 }
 
 #start_button {
     background-color: rgba(84, 6, 6, 0);
     border: none;
     color: white;
-    font-size: 35px;
+    font-size: 45px;
     font-family: "Pixelify Sans", sans-serif;
     text-decoration: none;
     transition: text-decoration 0.2s, color 0.2s;
@@ -52,7 +53,7 @@ body {
     background-color: rgba(84, 6, 6, 0);
     border: none;
     color: white;
-    font-size: 35px;
+    font-size: 45px;
     font-family: "Pixelify Sans", sans-serif;
     text-decoration: none;
     transition: text-decoration 0.2s, color 0.2s;
