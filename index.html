@@ -21,8 +21,28 @@
                     < START>
                 </span></button>
             <button id="ranking_button"><span>
-                    < RANKING>
+                    < SCORES>
                 </span></button>
+        </div>
+
+        <div id="ranking_screen" style="display: none;">
+            <div class="ranking_content">
+                <h2>HIGH SCORES</h2>
+                <ul id="score_list">
+                </ul>
+                <button id="close_ranking_button">VOLTAR</button>
+            </div>
+        </div>
+
+        <div id="name_input_screen" style="display: none;">
+            <div class="input_box">
+                <h2>GAME OVER</h2>
+                <p>Sua pontuação: <span id="final_score_display">0</span></p>
+                
+                <input type="text" id="player_name_input" placeholder="Digite seu nome" maxlength="10" autocomplete="off">
+                
+                <button id="submit_score_button">SALVAR SCORE</button>
+            </div>
         </div>
 
         <button id="restart_button" style="display: none;">PLAY AGAIN</button>

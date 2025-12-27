@@ -71,6 +71,18 @@ let speedIncreaseTimer = 0;
 const speedIncreaseInterval = 600;
 const speedIncreaseFactor = 0.05;
 
+const rankingButton = document.getElementById('ranking_button');
+const rankingScreen = document.getElementById('ranking_screen');
+const closeRankingButton = document.getElementById('close_ranking_button');
+const scoreListElement = document.getElementById('score_list');
+
+const nameInputScreen = document.getElementById('name_input_screen');
+const playerNameInput = document.getElementById('player_name_input');
+const submitScoreButton = document.getElementById('submit_score_button');
+const finalScoreDisplay = document.getElementById('final_score_display');
+
+let scoreSaved = false;
+
 function desenharHUD() {
     if (vidaAtual <= 0) {
         return;
@@ -129,6 +141,10 @@ function resetGame() {
     restart_button.style.display = 'none';
     back_to_menu_button.style.display = 'none';
     
+    scoreSaved = false;
+    nameInputScreen.style.display = 'none'; 
+    playerNameInput.value = ''; 
+
     vidaAtual = vidaMaxima;
     isInvincible = false;
     invincibilityTimer = 0;
@@ -192,6 +208,14 @@ const gameLoop = (timestamp) => {
     if (gameStatus === 'gameover') {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (!scoreSaved) {
+            nameInputScreen.style.display = 'flex';
+            finalScoreDisplay.innerText = Math.floor(score);
+            playerNameInput.focus(); 
+            
+            scoreSaved = true; 
+        }
 
         deathAnimationFrame++;
         
@@ -364,6 +388,77 @@ addEventListener('keyup', (event) => {
     if (key === 'd') keys.right = false;
     if (key === ' ') keys.space = false;
     if (key === 's') keys.down = false;
+});
+
+function getHighScores() {
+    const scores = localStorage.getItem('runllow_highscores');
+    return scores ? JSON.parse(scores) : [];
+}
+
+function saveHighScore(name, score) {
+    const highScores = getHighScores();
+    const scoreToSave = Math.floor(score);
+
+    // Normaliza o nome para evitar duplicatas como "Bob" e "bob"
+    // O findIndex retorna a posição no array (-1 se não achar)
+    const existingIndex = highScores.findIndex(item => item.name.toLowerCase() === name.toLowerCase());
+
+    if (existingIndex !== -1) {
+        // --- AQUI ESTÁ A MUDANÇA ---
+        // Verifica se a nova pontuação é MAIOR que a antiga
+        if (scoreToSave > highScores[existingIndex].score) {
+            highScores[existingIndex].score = scoreToSave; // Substitui o valor
+        }
+        // Se for menor ou igual, não fazemos nada (o recorde antigo prevalece)
+        
+    } else {
+        // Se o usuário não existe, cria um novo registro
+        const newScore = {
+            name: name,
+            score: scoreToSave
+        };
+        highScores.push(newScore);
+    }
+
+    highScores.sort((a, b) => b.score - a.score);
+    
+    highScores.splice(10);
+    
+    localStorage.setItem('runllow_highscores', JSON.stringify(highScores));
+}
+
+function showRanking() {
+    const highScores = getHighScores();
+    scoreListElement.innerHTML = highScores
+        .map((score, index) => `<li><span>${index + 1}. ${score.name}</span> <span>${score.score}</span></li>`)
+        .join('');
+    
+    rankingScreen.style.display = 'flex';
+}
+
+rankingButton.addEventListener('click', () => {
+    showRanking();
+});
+
+closeRankingButton.addEventListener('click', () => {
+    rankingScreen.style.display = 'none';
+});
+
+submitScoreButton.addEventListener('click', () => {
+    const name = playerNameInput.value.trim() || "Anônimo";
+    
+    if(name)
+
+    saveHighScore(name, score); 
+    
+    nameInputScreen.style.display = 'none';
+    
+    const restart_button = document.getElementById('restart_button');
+    const back_to_menu_button = document.getElementById('back_to_menu_button');
+    
+    restart_button.style.display = 'block';
+    back_to_menu_button.style.display = 'block';
+    
 });
 
 const back_to_menu_button = document.getElementById('back_to_menu_button');
