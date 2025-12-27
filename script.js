@@ -376,18 +376,18 @@ const gameLoop = (timestamp) => {
 
 addEventListener('keydown', (event) => {
     const key = event.key.toLowerCase();
-    if (key === 'a') keys.left = true;
-    if (key === 'd') keys.right = true;
-    if (key === ' ') keys.space = true;
-    if (key === 's') keys.down = true;
+    if (key === 'a' || key === "arrowleft") keys.left = true;
+    if (key === 'd' || key === "arrowright") keys.right = true;
+    if (key === ' ' || key === "arrowup") keys.space = true;
+    if (key === 's' || key === "arrowdown") keys.down = true;
 });
 
 addEventListener('keyup', (event) => {
     const key = event.key.toLowerCase();
-    if (key === 'a') keys.left = false;
-    if (key === 'd') keys.right = false;
-    if (key === ' ') keys.space = false;
-    if (key === 's') keys.down = false;
+    if (key === 'a' || key === "arrowleft") keys.left = false;
+    if (key === 'd' || key === "arrowright") keys.right = false;
+    if (key === ' ' || key === "arrowup") keys.space = false;
+    if (key === 's' || key === "arrowdown") keys.down = false;
 });
 
 function getHighScores() {

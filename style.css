@@ -12,13 +12,12 @@ body {
     justify-content: center;
     align-items: center;
     margin-top: 15vh;
-    background-color: #302F30;
-    
+    background-color: #2f2f30; 
 }
 
 #game_board {
     background-image: url(./assets/sprites/coliseu.png);
-    border: black solid 5px;
+    border: #ffffff64 solid 5px;
     border-radius: 5px;
 }
 
@@ -27,7 +26,7 @@ body {
     align-items: center;
     justify-content: center;
     display: flex;
-    top: 48%;
+    top: 47%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 3;
@@ -35,7 +34,7 @@ body {
     height: 600px;
     flex-direction: column;
     gap: 5px;
-    background-color: rgba(0, 255, 255, 0.154);
+    background-color: #1a1a1aab;
 }
 
 #start_button {
@@ -70,7 +69,7 @@ body {
     font-size: 100px;
     font-family: "Pixelify Sans", sans-serif;
     color: white;
-    text-shadow: 8px 8px 0 #000000;
+    text-shadow: 4px 4px 0 #000000;
 }
 
 /* ... código de body e game_container ... */
@@ -190,7 +189,6 @@ body {
     font-family: 'Pixelify Sans', sans-serif;
     font-size: 20px;
     padding: 10px 20px;
-    cursor: pointer;
     background: transparent;
     color: white;
     border: 2px solid white;
