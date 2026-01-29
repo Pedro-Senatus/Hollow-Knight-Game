@@ -80,6 +80,7 @@ const nameInputScreen = document.getElementById('name_input_screen');
 const playerNameInput = document.getElementById('player_name_input');
 const submitScoreButton = document.getElementById('submit_score_button');
 const finalScoreDisplay = document.getElementById('final_score_display');
+const skipScoreButton = document.getElementById('skip_score_button');
 
 let scoreSaved = false;
 
@@ -399,20 +400,14 @@ function saveHighScore(name, score) {
     const highScores = getHighScores();
     const scoreToSave = Math.floor(score);
 
-    // Normaliza o nome para evitar duplicatas como "Bob" e "bob"
-    // O findIndex retorna a posição no array (-1 se não achar)
     const existingIndex = highScores.findIndex(item => item.name.toLowerCase() === name.toLowerCase());
 
     if (existingIndex !== -1) {
-        // --- AQUI ESTÁ A MUDANÇA ---
-        // Verifica se a nova pontuação é MAIOR que a antiga
         if (scoreToSave > highScores[existingIndex].score) {
-            highScores[existingIndex].score = scoreToSave; // Substitui o valor
+            highScores[existingIndex].score = scoreToSave; 
         }
-        // Se for menor ou igual, não fazemos nada (o recorde antigo prevalece)
         
     } else {
-        // Se o usuário não existe, cria um novo registro
         const newScore = {
             name: name,
             score: scoreToSave
@@ -446,22 +441,22 @@ closeRankingButton.addEventListener('click', () => {
 
 submitScoreButton.addEventListener('click', () => {
     const name = playerNameInput.value.trim() || "Anônimo";
-    
-    if(name)
-
-    saveHighScore(name, score); 
-    
-    nameInputScreen.style.display = 'none';
-    
-    const restart_button = document.getElementById('restart_button');
-    const back_to_menu_button = document.getElementById('back_to_menu_button');
-    
-    restart_button.style.display = 'block';
-    back_to_menu_button.style.display = 'block';
+    saveHighScore(name, score);
+    finalizarGameOverUI();
     
 });
+
+function finalizarGameOverUI() {
+    console.log("ENTREI AQUI");
+    
+    nameInputScreen.style.display = 'none';
+    restart_button.style.display = 'block';
+    back_to_menu_button.style.display = 'block';
+}
+
 
 const back_to_menu_button = document.getElementById('back_to_menu_button');
 const restart_button = document.getElementById('restart_button');
 restart_button.addEventListener('click', resetGame);
 back_to_menu_button.addEventListener('click', backToMenu);
+skipScoreButton.addEventListener('click', finalizarGameOverUI);
