@@ -51,15 +51,24 @@ class Player {
     this.position.x += this.velocity * deltaTimeFactor;
   };
 
-  jump() {
+  jump(sound) {
     if (!this.isJumping && !this.isCrouching) {
+        if (sound) {
+            sound.currentTime = 0; 
+            sound.play();
+        }
       this.isJumping = true;
       this.velocityJump = this.jumpStrength;
     }
   };
 
-  crouch() {
+  crouch(sound) {
     if (!this.isJumping && !this.isCrouching) {
+
+        if (sound) {
+            sound.currentTime = 0;
+            sound.play();
+        }
       this.isCrouching = true;
       
       this.height = this.crouchHeight; 

@@ -81,6 +81,12 @@ const playerNameInput = document.getElementById('player_name_input');
 const submitScoreButton = document.getElementById('submit_score_button');
 const finalScoreDisplay = document.getElementById('final_score_display');
 const skipScoreButton = document.getElementById('skip_score_button');
+const backgroundMusic = new Audio('assets/sounds/Grimm (Hollow Knight_ The Grimm Troupe) [qmsjvBivRkU] v2.mp3');
+const jumpSound = new Audio('assets/sounds/Jump12.wav');
+const hurtSound = new Audio('assets/sounds/Hit.wav');
+const crouchSound = new Audio('assets/sounds/Hit1.wav');
+backgroundMusic.loop = true;
+backgroundMusic.volume = 0.5;
 
 let scoreSaved = false;
 
@@ -124,7 +130,7 @@ function desenharHUD() {
 start_button.addEventListener('click', () => {
     const menu_inicial = document.getElementById('menu_inicial');
     menu_inicial.style.display = 'none';
-    
+    backgroundMusic.play().catch(e => console.error("Erro ao tocar música:", e));
     gameStatus = 'running'; 
     
     if (player.spriteSheet.complete) {
@@ -141,7 +147,6 @@ function resetGame() {
     const back_to_menu_button = document.getElementById('back_to_menu_button');
     restart_button.style.display = 'none';
     back_to_menu_button.style.display = 'none';
-    
     scoreSaved = false;
     nameInputScreen.style.display = 'none'; 
     playerNameInput.value = ''; 
@@ -207,6 +212,9 @@ const gameLoop = (timestamp) => {
     }
 
     if (gameStatus === 'gameover') {
+
+        backgroundMusic.pause();     
+        backgroundMusic.currentTime = 0;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -300,10 +308,10 @@ const gameLoop = (timestamp) => {
         player.moveRight(deltaTimeFactor);
     }
     if (keys.space) {
-        player.jump();
+        player.jump(jumpSound); 
     }
     if (keys.down) {
-        player.crouch();
+        player.crouch(crouchSound);
     } else {
         player.stopCrouch();
     }
@@ -344,7 +352,8 @@ const gameLoop = (timestamp) => {
         enemy.draw(ctx);
 
         if (checkCollision(player, enemy) && !isInvincible) {
-
+            hurtSound.currentTime = 0;
+            hurtSound.play();
             vidaAtual -= 1
 
             enemies.splice(i, 1);
@@ -457,6 +466,9 @@ function finalizarGameOverUI() {
 
 const back_to_menu_button = document.getElementById('back_to_menu_button');
 const restart_button = document.getElementById('restart_button');
-restart_button.addEventListener('click', resetGame);
+restart_button.addEventListener('click', ()=>{
+    resetGame();
+    backgroundMusic.play();
+});
 back_to_menu_button.addEventListener('click', backToMenu);
 skipScoreButton.addEventListener('click', finalizarGameOverUI);
