@@ -86,7 +86,10 @@ const jumpSound = new Audio('assets/sounds/Jump12.wav');
 const hurtSound = new Audio('assets/sounds/Hit.wav');
 const crouchSound = new Audio('assets/sounds/Hit1.wav');
 backgroundMusic.loop = true;
-backgroundMusic.volume = 0.5;
+backgroundMusic.volume = 0.2;
+jumpSound.volume = 0.4;
+hurtSound.volume = 0.4;
+crouchSound.volume = 0.4;
 
 let scoreSaved = false;
 
