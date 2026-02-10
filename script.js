@@ -1,5 +1,7 @@
 import Player from "./classes/Player.js";
 import { Enemy, Dengue } from "./classes/Enemy.js";
+// NOVO: Importando itens e projéteis
+import { MagicItem, Projectile } from "./classes/Items.js";
 
 const canvas = document.getElementById('game_board');
 const ctx = canvas.getContext('2d');
@@ -29,10 +31,17 @@ const keys = {
     right: false,
     space: false,
     down: false,
+    shoot: false // NOVO: tecla de tiro
 }
 
 const enemies = [];
 let spawnTimer = 0;
+
+// NOVO: Listas e timers para itens e projéteis
+const items = [];
+const projectiles = [];
+let itemSpawnTimer = 0;
+let itemSpawnInterval = 1000; 
 
 let spawnInterval = Math.floor(Math.random() * (200 - 160 + 1)) + 160;
 
@@ -53,6 +62,9 @@ lifePointsIcon.src = 'assets/sprites/life_points.png';
 
 const lifePointsIconEmpty = new Image();
 lifePointsIconEmpty.src = 'assets/sprites/life_points_negative.png';
+
+const ammoIconHUD = new Image();
+ammoIconHUD.src = 'assets/sprites/spell.png'; 
 
 const playerDefeatedSprite1 = new Image();
 playerDefeatedSprite1.src = 'assets/sprites/sprite-death.png';
@@ -113,19 +125,30 @@ function desenharHUD() {
         }
     }
 
+    // NOVO: Mostrar munição
+    if (player.ammo > 0) {
+        const ammoX = padding;
+        const ammoY = padding + iconSize + 10;
+        
+        ctx.drawImage(ammoIconHUD, ammoX, ammoY, 30, 30);
+        
+        ctx.fillStyle = "white";
+        ctx.font = "20px Pixelify Sans";
+        ctx.textAlign = 'left';
+        ctx.fillText("x " + player.ammo, ammoX + 35, ammoY + 22);
+    }
+
     ctx.font = '30px Pixelify Sans';
     ctx.textAlign = 'right';
 
     const scoreText = `SCORE: ${Math.floor(score)}`;
-    const xPos = canvas.width - padding; // Canto superior direito
-    const yPosScore = padding + iconSize; // Abaixo dos ícones de vida ou no topo, se não tiver vida
+    const xPos = canvas.width - padding; 
+    const yPosScore = padding + iconSize; 
     
-    // Desenhar contorno/sombra
     ctx.strokeStyle = 'black'; 
-    ctx.lineWidth = 5;        
+    ctx.lineWidth = 5;        
     ctx.strokeText(scoreText, xPos, yPosScore);
     
-    // Desenhar texto principal
     ctx.fillStyle = 'white'; 
     ctx.fillText(scoreText, xPos, yPosScore);
 }
@@ -166,6 +189,12 @@ function resetGame() {
 
     enemies.length = 0;
     spawnTimer = 0;
+
+    // NOVO: Resetar itens e projéteis
+    items.length = 0;
+    projectiles.length = 0;
+    player.ammo = 0;
+    itemSpawnTimer = 0;
 
     player.position.x = 0;
     player.position.y = player.ground;
@@ -304,6 +333,7 @@ const gameLoop = (timestamp) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     desenharHUD();
 
+    // Movimentação do Player
     if (keys.left && player.position.x > 0) {
         player.moveLeft(deltaTimeFactor);
     }
@@ -319,10 +349,77 @@ const gameLoop = (timestamp) => {
         player.stopCrouch();
     }
 
+    // NOVO: Lógica de Disparo
+    if (keys.shoot) {
+        if (player.shoot()) {
+            projectiles.push(new Projectile(
+                player.position.x + player.width, 
+                player.position.y + (player.height / 2) - 15
+            ));
+            // Opcional: Som de tiro aqui
+            keys.shoot = false; 
+        } else {
+            keys.shoot = false; 
+        }
+    }
+
     player.update(deltaTimeFactor);
 
     if (!isInvincible || invincibilityTimer % 10 < 5) {
         player.draw(ctx);
+    }
+
+    // NOVO: Atualizar e desenhar projéteis
+    for (let i = 0; i < projectiles.length; i++) {
+        const proj = projectiles[i];
+        proj.update(deltaTimeFactor);
+        proj.draw(ctx);
+
+        if (proj.position.x > canvas.width) {
+            projectiles.splice(i, 1);
+            i--;
+            continue;
+        }
+
+        // Colisão Projétil x Inimigo
+        for (let j = 0; j < enemies.length; j++) {
+            const enemy = enemies[j];
+            if (checkCollision(proj, enemy)) {
+                enemies.splice(j, 1);
+                projectiles.splice(i, 1);
+                i--;
+                
+                hurtSound.currentTime = 0; 
+                hurtSound.play();
+                score += 10; 
+                break; 
+            }
+        }
+    }
+
+    itemSpawnTimer += 1 * deltaTimeFactor;
+    if (itemSpawnTimer >= itemSpawnInterval) {
+        if (Math.random() < 0.8) { 
+             const randomY = Math.random() * (450 - 300) + 300;
+             items.push(new MagicItem(canvas.width, randomY, currentEnemySpeed));
+        }
+        itemSpawnTimer = 0;
+        itemSpawnInterval = Math.floor(Math.random() * (1500 - 800) + 800); 
+    }
+
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        item.update(deltaTimeFactor);
+        item.draw(ctx);
+
+        if (checkCollision(player, item)) {
+            player.ammo += 1;
+            items.splice(i, 1);
+            i--;
+        } else if (item.position.x + item.width < 0) {
+            items.splice(i, 1);
+            i--;
+        }
     }
 
     spawnTimer += 1 * deltaTimeFactor;
@@ -393,6 +490,7 @@ addEventListener('keydown', (event) => {
     if (key === 'd' || key === "arrowright") keys.right = true;
     if (key === ' ' || key === "arrowup") keys.space = true;
     if (key === 's' || key === "arrowdown") keys.down = true;
+    if (key === 'f') keys.shoot = true; 
 });
 
 addEventListener('keyup', (event) => {
@@ -401,6 +499,7 @@ addEventListener('keyup', (event) => {
     if (key === 'd' || key === "arrowright") keys.right = false;
     if (key === ' ' || key === "arrowup") keys.space = false;
     if (key === 's' || key === "arrowdown") keys.down = false;
+    if (key === 'f') keys.shoot = false; 
 });
 
 function getHighScores() {
